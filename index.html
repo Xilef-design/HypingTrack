@@ -1,50 +1,1203 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HypingTrack</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-        }
-        
-        header {
-            background-color: #333;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        
-        main {
-            max-width: 1000px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hyping Track</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --card: #16161f;
+      --border: #1e1e2e;
+      --accent: #7c3aed;
+      --accent2: #a855f7;
+      --glow: #7c3aed44;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #eab308;
+      --cyan: #06b6d4;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* BACKGROUND */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% -10%, #7c3aed18 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 110%, #a855f714 0%, transparent 55%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* GRID OVERLAY */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(124,58,237,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,58,237,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 64px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      box-shadow: 0 0 16px var(--glow);
+    }
+
+    .logo span { color: var(--accent2); }
+
+    nav .nav-links {
+      display: flex;
+      gap: 6px;
+      list-style: none;
+    }
+
+    nav .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    nav .nav-links a:hover,
+    nav .nav-links a.active {
+      color: var(--text);
+      background: var(--border);
+    }
+
+    /* MAP SECTION */
+    .map-section {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto 40px;
+      padding: 0 24px;
+    }
+
+    .map-container {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .map-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .map-toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .map-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .map-dot-red { background: #ef4444; }
+    .map-dot-yellow { background: #eab308; }
+    .map-dot-green { background: #22c55e; }
+
+    .map-url {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 14px;
+      flex: 1;
+      max-width: 380px;
+      margin: 0 16px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .map-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .map-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .map-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent2);
+    }
+
+    .map-btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-color: transparent;
+      color: white;
+    }
+
+    .map-btn-primary:hover {
+      opacity: 0.85;
+      color: white;
+    }
+
+    .map-iframe-wrap {
+      position: relative;
+      height: 540px;
+    }
+
+    .map-iframe-wrap iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    .map-loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      background: var(--card);
+      z-index: 2;
+      transition: opacity 0.4s;
+    }
+
+    .map-loading.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .map-spinner {
+      width: 40px; height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent2);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .map-loading-text {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .map-coords {
+      display: flex;
+      gap: 12px;
+      padding: 10px 20px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .coord-item { display: flex; align-items: center; gap: 5px; }
+    .coord-item span:first-child { color: var(--accent2); font-weight: 700; }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .server-status {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--green);
+      font-family: 'Space Mono', monospace;
+    }
+
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
+      50% { box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+    }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 80px 32px 48px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(124,58,237,0.15);
+      border: 1px solid rgba(124,58,237,0.3);
+      border-radius: 100px;
+      padding: 4px 14px;
+      font-size: 12px;
+      color: var(--accent2);
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-size: clamp(42px, 7vw, 80px);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -2px;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 .gradient {
+      background: linear-gradient(135deg, #a855f7, #7c3aed, #06b6d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 16px;
+      max-width: 480px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+    }
+
+    /* SEARCH BAR */
+    .search-wrap {
+      position: relative;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .search-wrap input {
+      width: 100%;
+      padding: 16px 56px 16px 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .search-wrap input::placeholder { color: var(--muted); }
+    .search-wrap input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--glow);
+    }
+
+    .search-btn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none;
+      color: white;
+      border-radius: 10px;
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s;
+    }
+
+    .search-btn:hover { opacity: 0.85; }
+
+    /* STATS GRID */
+    .stats-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 0 24px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .stat-card:hover { border-color: var(--accent); }
+    .stat-card:hover::before { opacity: 1; }
+
+    .stat-icon {
+      font-size: 22px;
+      margin-bottom: 12px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    .stat-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* SECTION */
+    .section {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 40px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title::before {
+      content: '';
+      width: 4px; height: 18px;
+      background: linear-gradient(to bottom, var(--accent), var(--accent2));
+      border-radius: 2px;
+    }
+
+    .see-all {
+      font-size: 13px;
+      color: var(--accent2);
+      cursor: pointer;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+
+    .see-all:hover { opacity: 0.75; }
+
+    /* LEADERBOARD */
+    .leaderboard {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .player-row {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 20px;
+      display: grid;
+      grid-template-columns: 40px 1fr 120px 120px 120px 100px;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .player-row:hover {
+      border-color: var(--accent);
+      background: #1a1a24;
+      transform: translateX(2px);
+    }
+
+    .player-rank {
+      font-family: 'Space Mono', monospace;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .rank-1 { color: #fbbf24; }
+    .rank-2 { color: #94a3b8; }
+    .rank-3 { color: #cd7c2f; }
+
+    .player-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      image-rendering: pixelated;
+    }
+
+    .player-name {
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .player-tag {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+    }
+
+    .player-stat {
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .stat-col-label {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .kdr-good { color: var(--green); }
+    .kdr-mid { color: var(--yellow); }
+    .kdr-bad { color: var(--red); }
+
+    .rank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .rank-mvp { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+    .rank-vip { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+    .rank-elite { background: rgba(124,58,237,0.15); color: var(--accent2); border: 1px solid rgba(124,58,237,0.3); }
+    .rank-default { background: rgba(100,116,139,0.15); color: var(--muted); border: 1px solid rgba(100,116,139,0.3); }
+
+    /* TABLE HEADER */
+    .table-header {
+      display: grid;
+      grid-template-columns: 40px 1fr 120px 120px 120px 100px;
+      gap: 12px;
+      padding: 0 20px 10px;
+    }
+
+    /* TABS */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 4px;
+      width: fit-content;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      padding: 7px 18px;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--muted);
+      border: none;
+      background: transparent;
+      font-family: 'Syne', sans-serif;
+    }
+
+    .tab.active {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    /* PLAYER PROFILE MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      width: 90%;
+      max-width: 680px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 32px;
+      transform: translateY(20px);
+      transition: transform 0.25s;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .modal-overlay.open .modal {
+      transform: translateY(0);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px; right: 20px;
+      background: var(--border);
+      border: none;
+      color: var(--text);
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
+      position: relative;
+    }
+
+    .modal-avatar {
+      width: 64px; height: 64px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      overflow: hidden;
+    }
+
+    .modal-avatar img {
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+      object-fit: cover;
+    }
+
+    .modal-name {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .modal-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .modal-stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .modal-stat-val {
+      font-size: 22px;
+      font-weight: 800;
+      font-family: 'Space Mono', monospace;
+      letter-spacing: -1px;
+    }
+
+    .modal-stat-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    /* PROGRESS BAR */
+    .progress-section {
+      margin-bottom: 20px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--border);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width 1s ease;
+    }
+
+    /* SPARKLINE */
+    .sparkline-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+    }
+
+    .sparkline-title {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    canvas { width: 100% !important; }
+
+    /* FOOTER */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 32px;
+      color: var(--muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border);
+      margin-top: 20px;
+    }
+
+    footer a { color: var(--accent2); text-decoration: none; }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 300;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .player-row { grid-template-columns: 30px 1fr 80px 80px; }
+      .player-row .hide-mobile { display: none; }
+      .table-header { grid-template-columns: 30px 1fr 80px 80px; }
+      .table-header .hide-mobile { display: none; }
+      nav .nav-links { display: none; }
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>HypingTrack</h1>
-    </header>
-    
-    <main>
-        <p>Bienvenue sur HypingTrack!</p>
-        <!-- Votre contenu ici -->
-    </main>
-    
-    <script>
-        // Votre JavaScript ici
-    </script>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    <div class="logo-icon">⚡</div>
+    Hyping<span>Track</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#" class="active" onclick="showSection('leaderboard-section', this)">Classement</a></li>
+    <li><a href="#" onclick="showSection('map-section-wrap', this)">🗺️ Carte Live</a></li>
+    <li><a href="#">Joueurs</a></li>
+    <li><a href="#">Statistiques</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="server-status">
+      <div class="dot"></div>
+      <span id="online-count">—</span> en ligne
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">⚡ HYPING SERVER — TRACKING OFFICIEL</div>
+  <h1>Suis tes stats<br><span class="gradient">en temps réel</span></h1>
+  <p>Classements, kills, K/D ratio, victoires et bien plus pour tous les joueurs du serveur Hyping.</p>
+  <div class="search-wrap">
+    <input type="text" id="search-input" placeholder="Rechercher un joueur..." />
+    <button class="search-btn" onclick="searchPlayer()">🔍</button>
+  </div>
+</div>
+
+<!-- SERVER STATS -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon">👥</div>
+    <div class="stat-label">Joueurs total</div>
+    <div class="stat-value" id="total-players">2,847</div>
+    <div class="stat-sub">+34 aujourd'hui</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">⚔️</div>
+    <div class="stat-label">Kills aujourd'hui</div>
+    <div class="stat-value" id="kills-today">18,492</div>
+    <div class="stat-sub">↑ 12% vs hier</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">🏆</div>
+    <div class="stat-label">Parties jouées</div>
+    <div class="stat-value" id="games-played">4,201</div>
+    <div class="stat-sub">Ce mois-ci</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">🎯</div>
+    <div class="stat-label">K/D moyen</div>
+    <div class="stat-value" id="avg-kd">1.84</div>
+    <div class="stat-sub">Sur le serveur</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-title">Classement Global</div>
+    <span class="see-all">Tout voir →</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(this, 'kills')">⚔️ Kills</button>
+    <button class="tab" onclick="switchTab(this, 'kd')">📊 K/D Ratio</button>
+    <button class="tab" onclick="switchTab(this, 'wins')">🏆 Victoires</button>
+    <button class="tab" onclick="switchTab(this, 'streak')">🔥 Streak</button>
+  </div>
+
+  <div class="table-header">
+    <div class="stat-col-label">#</div>
+    <div class="stat-col-label">Joueur</div>
+    <div class="stat-col-label">Kills</div>
+    <div class="stat-col-label">K/D</div>
+    <div class="stat-col-label hide-mobile">Victoires</div>
+    <div class="stat-col-label hide-mobile">Grade</div>
+  </div>
+
+  <div class="leaderboard" id="leaderboard"></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
+  <div class="modal" id="modal-content">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-header">
+      <div class="modal-avatar" id="modal-avatar"><img id="modal-skin" src="" alt=""></div>
+      <div>
+        <div class="modal-name" id="modal-name"></div>
+        <div id="modal-badge"></div>
+      </div>
+    </div>
+    <div class="modal-stats-grid" id="modal-stats"></div>
+    <div class="progress-section">
+      <div class="progress-label">
+        <span>Progression vers le prochain niveau</span>
+        <span id="xp-label"></span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="xp-bar" style="width:0%"></div>
+      </div>
+    </div>
+    <div class="sparkline-section">
+      <div class="sparkline-title">📈 Kills — 7 derniers jours</div>
+      <canvas id="sparkline" height="60"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span id="toast-msg"></span>
+</div>
+
+<footer>
+  Hyping<strong>Track</strong> — non affilié, fait par la communauté •
+  Données simulées, à connecter à l'API du serveur •
+  <a href="https://github.com" target="_blank">Code source GitHub</a>
+</footer>
+
+<script>
+// ---- DATA ----
+const PLAYERS = [
+  { name: "xNeoZz", uuid: "a", kills: 48320, deaths: 9204, wins: 1840, streak: 34, rank: "MVP", color: "#fbbf24" },
+  { name: "Phantomlw", uuid: "b", kills: 41002, deaths: 11003, wins: 1420, streak: 21, rank: "Elite", color: "#a855f7" },
+  { name: "DroppedPvP", uuid: "c", kills: 39874, deaths: 8912, wins: 1390, streak: 18, rank: "VIP", color: "#22c55e" },
+  { name: "Steelify", uuid: "d", kills: 37200, deaths: 14300, wins: 1120, streak: 14, rank: "MVP", color: "#fbbf24" },
+  { name: "LunarFrag", uuid: "e", kills: 33500, deaths: 9800, wins: 980, streak: 11, rank: "Elite", color: "#a855f7" },
+  { name: "Crxsh", uuid: "f", kills: 31200, deaths: 12000, wins: 870, streak: 9, rank: "VIP", color: "#22c55e" },
+  { name: "Miroir_PvP", uuid: "g", kills: 28900, deaths: 10100, wins: 780, streak: 7, rank: "VIP", color: "#22c55e" },
+  { name: "Zynkore", uuid: "h", kills: 24500, deaths: 13200, wins: 610, streak: 5, rank: "Default", color: "#94a3b8" },
+  { name: "FrostByte", uuid: "i", kills: 21300, deaths: 11000, wins: 530, streak: 4, rank: "Default", color: "#94a3b8" },
+  { name: "Vlt_Arc", uuid: "j", kills: 18700, deaths: 9900, wins: 470, streak: 3, rank: "Default", color: "#94a3b8" },
+];
+
+function kd(p) { return (p.kills / Math.max(1, p.deaths)).toFixed(2); }
+
+function rankBadge(rank) {
+  const cls = { MVP: "rank-mvp", VIP: "rank-vip", Elite: "rank-elite", Default: "rank-default" };
+  return `<span class="rank-badge ${cls[rank] || 'rank-default'}">${rank}</span>`;
+}
+
+function kdClass(v) {
+  if (v >= 3) return "kdr-good";
+  if (v >= 1.5) return "kdr-mid";
+  return "kdr-bad";
+}
+
+let currentSort = "kills";
+
+function getSorted(key) {
+  return [...PLAYERS].sort((a, b) => {
+    if (key === "kd") return parseFloat(kd(b)) - parseFloat(kd(a));
+    if (key === "kills") return b.kills - a.kills;
+    if (key === "wins") return b.wins - a.wins;
+    if (key === "streak") return b.streak - a.streak;
+    return 0;
+  });
+}
+
+function renderLeaderboard(sorted) {
+  const lb = document.getElementById("leaderboard");
+  lb.innerHTML = "";
+  sorted.forEach((p, i) => {
+    const pos = i + 1;
+    const kdVal = parseFloat(kd(p));
+    const skinUrl = `https://mc-heads.net/avatar/${p.name}/36`;
+    const row = document.createElement("div");
+    row.className = "player-row";
+    row.innerHTML = `
+      <div class="player-rank ${pos<=3?'rank-'+pos:''}">${pos <= 3 ? ['🥇','🥈','🥉'][pos-1] : pos}</div>
+      <div class="player-info">
+        <div class="avatar"><img src="${skinUrl}" onerror="this.parentElement.textContent='${p.name[0]}'" alt="${p.name}"></div>
+        <div>
+          <div class="player-name">${p.name}</div>
+          <div class="player-tag">#${p.uuid.toUpperCase()}${Math.floor(Math.random()*9000+1000)}</div>
+        </div>
+      </div>
+      <div class="player-stat">${p.kills.toLocaleString('fr-FR')}</div>
+      <div class="player-stat ${kdClass(kdVal)}">${kd(p)}</div>
+      <div class="player-stat hide-mobile">${p.wins.toLocaleString('fr-FR')}</div>
+      <div class="hide-mobile">${rankBadge(p.rank)}</div>
+    `;
+    row.onclick = () => openModal(p);
+    lb.appendChild(row);
+  });
+}
+
+function switchTab(btn, key) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  currentSort = key;
+  renderLeaderboard(getSorted(key));
+}
+
+// ---- MODAL ----
+function openModal(p) {
+  const kdVal = kd(p);
+  const skinUrl = `https://mc-heads.net/avatar/${p.name}/64`;
+  document.getElementById("modal-skin").src = skinUrl;
+  document.getElementById("modal-name").textContent = p.name;
+  document.getElementById("modal-badge").innerHTML = rankBadge(p.rank);
+
+  const stats = [
+    { val: p.kills.toLocaleString('fr-FR'), label: "Kills" },
+    { val: kdVal, label: "K/D Ratio", cls: kdClass(parseFloat(kdVal)) },
+    { val: p.deaths.toLocaleString('fr-FR'), label: "Morts" },
+    { val: p.wins.toLocaleString('fr-FR'), label: "Victoires" },
+    { val: p.streak, label: "Win streak" },
+    { val: Math.round(p.kills * 2.4).toLocaleString('fr-FR'), label: "Exp. gagnée" },
+  ];
+
+  document.getElementById("modal-stats").innerHTML = stats.map(s =>
+    `<div class="modal-stat">
+      <div class="modal-stat-val ${s.cls||''}">${s.val}</div>
+      <div class="modal-stat-label">${s.label}</div>
+    </div>`
+  ).join('');
+
+  const xp = Math.floor(Math.random() * 80) + 10;
+  document.getElementById("xp-label").textContent = `${xp}%`;
+  setTimeout(() => { document.getElementById("xp-bar").style.width = xp + '%'; }, 100);
+
+  drawSparkline(p);
+  document.getElementById("modal").classList.add("open");
+}
+
+function closeModal() {
+  document.getElementById("modal").classList.remove("open");
+}
+
+function closeModalOutside(e) {
+  if (e.target.id === "modal") closeModal();
+}
+
+// ---- SPARKLINE ----
+function drawSparkline(p) {
+  const canvas = document.getElementById("sparkline");
+  const ctx = canvas.getContext("2d");
+  canvas.width = canvas.offsetWidth || 600;
+  canvas.height = 60;
+
+  const days = 7;
+  const data = Array.from({ length: days }, () => Math.floor(Math.random() * 800 + 200));
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const w = canvas.width;
+  const h = canvas.height;
+  const pad = 10;
+
+  ctx.clearRect(0, 0, w, h);
+
+  // Gradient fill
+  const grad = ctx.createLinearGradient(0, 0, 0, h);
+  grad.addColorStop(0, "rgba(124,58,237,0.4)");
+  grad.addColorStop(1, "rgba(124,58,237,0)");
+
+  ctx.beginPath();
+  data.forEach((v, i) => {
+    const x = pad + (i / (days - 1)) * (w - pad * 2);
+    const y = h - pad - ((v - min) / (max - min || 1)) * (h - pad * 2);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = "#a855f7";
+  ctx.lineWidth = 2;
+  ctx.lineJoin = "round";
+  ctx.stroke();
+
+  // Fill
+  ctx.lineTo(pad + (6 / 6) * (w - pad * 2), h);
+  ctx.lineTo(pad, h);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Dots
+  data.forEach((v, i) => {
+    const x = pad + (i / (days - 1)) * (w - pad * 2);
+    const y = h - pad - ((v - min) / (max - min || 1)) * (h - pad * 2);
+    ctx.beginPath();
+    ctx.arc(x, y, 3, 0, Math.PI * 2);
+    ctx.fillStyle = "#a855f7";
+    ctx.fill();
+  });
+}
+
+// ---- SEARCH ----
+function searchPlayer() {
+  const q = document.getElementById("search-input").value.trim().toLowerCase();
+  if (!q) return;
+  const found = PLAYERS.find(p => p.name.toLowerCase().includes(q));
+  if (found) {
+    openModal(found);
+  } else {
+    showToast("❌ Joueur introuvable : " + q);
+  }
+}
+
+document.getElementById("search-input").addEventListener("keydown", e => {
+  if (e.key === "Enter") searchPlayer();
+});
+
+// ---- TOAST ----
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  document.getElementById("toast-msg").textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 3000);
+}
+
+// ---- ONLINE COUNT (simulated) ----
+function updateOnline() {
+  const base = 120 + Math.floor(Math.random() * 80);
+  document.getElementById("online-count").textContent = base;
+}
+updateOnline();
+setInterval(updateOnline, 15000);
+
+// ---- COUNTER ANIMATION ----
+function animateCount(el, target, suffix = '') {
+  let cur = 0;
+  const step = target / 60;
+  const timer = setInterval(() => {
+    cur += step;
+    if (cur >= target) { cur = target; clearInterval(timer); }
+    el.textContent = Math.floor(cur).toLocaleString('fr-FR') + suffix;
+  }, 16);
+}
+
+window.addEventListener('load', () => {
+  animateCount(document.getElementById('total-players'), 2847);
+  animateCount(document.getElementById('kills-today'), 18492);
+  animateCount(document.getElementById('games-played'), 4201);
+  renderLeaderboard(getSorted("kills"));
+});
+</script>
 </body>
 </html>
